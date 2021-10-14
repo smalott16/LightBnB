@@ -65,7 +65,7 @@ const addUser =  function(user) {
     .then((result) => {
       console.log(result.row[0]);
       ///this then clause necessary?
-      //return result.row[0];
+      return result.row[0];
     })
     .catch((err) => {
       console.log(err.message);
@@ -85,7 +85,22 @@ exports.addUser = addUser;
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  
+  return pool
+  .query(`
+  SELECT *  
+  FROM properties 
+  JOIN reservations ON properties.id = property_id
+  WHERE guest_id = $1 LIMIT $2;`, [guest_id, limit])
+  .then((result) => {
+    console.log(result.rows);
+    return result.rows;
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
+  
+  //return getAllProperties(null, 2);
 }
 exports.getAllReservations = getAllReservations;
 
